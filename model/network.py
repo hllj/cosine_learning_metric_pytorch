@@ -41,5 +41,4 @@ class Network(BaseModel):
         scale_softplus = F.softplus(self.scale)
 
         logits = scale_softplus * logits
-
         return logits

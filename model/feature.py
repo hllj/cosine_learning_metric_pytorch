@@ -62,35 +62,41 @@ class Feature(BaseModel):
         self.batchnorm_10 = nn.BatchNorm1d(128)
 
     def forward(self, x):
-        x = F.elu(self.conv1(x))
-        x = self.batchnorm_1(x)
-        x = F.elu(self.conv2(x))
-        x = self.batchnorm_2(x)
+        x = F.elu(self.batchnorm_1(self.conv1(x)))
+
+        x = F.elu(self.batchnorm_2(self.conv2(x)))
+
         x = F.elu(self.pool3(x))
 
         # Residual 4
         res4 = F.elu(self.conv4(x))
         x = x + res4
+        x = F.elu(x)
 
         # Residual 5
         res5 = F.elu(self.conv5(x))
         x = x + res5
+        x = F.elu(x)
 
         # Residual 6
         res6 = F.elu(self.conv6(x))
         x = F.elu(self.upsize6(x)) + res6
+        x = F.elu(x)
 
         # Residual 7
         res7 = F.elu(self.conv7(x))
         x = x + res7
+        x = F.elu(x)
 
         # Residual 8
         res8 = F.elu(self.conv8(x))
         x = F.elu(self.upsize8(x)) + res8
+        x = F.elu(x)
 
         # Residual 9
         res9 = F.elu(self.conv9(x))
         x = x + res9
+        x = F.elu(x)
 
         flatten = self.flatten(x)
         x = self.dropout(x)
