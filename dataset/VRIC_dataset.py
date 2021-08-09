@@ -1,6 +1,6 @@
 import pandas as pd
 from torch.utils.data import Dataset
-from torchvision.io import read_image
+from PIL import Image
 
 import os
 
@@ -20,13 +20,14 @@ class VRICDataset(Dataset):
             self.data_csv = "data/VRIC/vric_probe.csv"
             self.data_dir = "data/VRIC/probe_images"
         self.data_list = pd.read_csv(self.data_csv)
+        self.num_classes = self.data_list["ID"].nunique()
 
     def __len__(self):
         return len(self.data_list)
 
     def __getitem__(self, idx):
         img_filename, idx, cam_idx = self.data_list.iloc[idx]
-        image = read_image(os.path.join(self.data_dir, img_filename))
+        image = Image.open(os.path.join(self.data_dir, img_filename))
         label = idx
         if self.transforms:
             image = self.transforms(image)
