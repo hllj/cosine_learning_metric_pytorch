@@ -13,10 +13,10 @@ class VRICDataset(Dataset):
         if split == "train":
             self.data_csv = "data/VRIC/vric_train.csv"
             self.data_dir = "data/VRIC/train_images"
-        elif split == "val":
+        elif split == "gallery":
             self.data_csv = "data/VRIC/vric_gallery.csv"
             self.data_dir = "data/VRIC/gallery_images"
-        elif split == "test":
+        elif split == "probe":
             self.data_csv = "data/VRIC/vric_probe.csv"
             self.data_dir = "data/VRIC/probe_images"
         self.data_list = pd.read_csv(self.data_csv)
