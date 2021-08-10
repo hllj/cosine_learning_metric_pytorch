@@ -1,6 +1,6 @@
 {
   "name": "cosine-learning-metric",
-  "n_gpu": 1,
+  "n_gpu": 2,
   "data_loader": {
     "img_width": 128,
     "img_height": 64,
@@ -13,7 +13,7 @@
       "shuffle": true
     }
   },
-  "epochs": 200,
+  "epochs": 30,
   "log_steps": 100,
   "optimizer": {
     "lr": 1e-3,
