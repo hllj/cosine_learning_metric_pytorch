@@ -3,6 +3,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 import torch.optim as optim
 from absl import app, flags, logging
+from tqdm import tqdm
 
 from model import Network, init_weights
 
@@ -10,7 +11,7 @@ from config import Config
 
 from dataset import VRICDataset
 
-from util import prepare_device
+from utils import prepare_device
 
 flags.DEFINE_string("config", "config/config.json", "Config file for project")
 
@@ -54,11 +55,6 @@ def main(argv):
         batch_size=train_data_config["batch_size"],
         shuffle=train_data_config["shuffle"],
     )
-    val_dataloader = DataLoader(
-        val_ds,
-        batch_size=val_data_config["batch_size"],
-        shuffle=val_data_config["shuffle"],
-    )
 
     # device
     device, device_ids = prepare_device(config.config_data["n_gpu"])
@@ -73,46 +69,28 @@ def main(argv):
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(
         net.parameters(),
-        lr=config.config_data["lr"],
-        weight_decay=config.config_data["weight_decay"],
+        lr=config.config_data["optimizer"]["lr"],
+        weight_decay=config.config_data["optimizer"]["weight_decay"],
     )
 
     for epoch in range(config.config_data["epochs"]):
         # train one epoch
         net.train()
         train_loss = 0.0
-        for batch_idx, (images, labels) in enumerate(train_dataloader):
-            images, labels = images.to(device), labels.to(device)
+        for data, target in tqdm(train_dataloader):
+            images, labels = data.to(device), target.to(device)
             optimizer.zero_grad()
             output = net(images)
             loss = criterion(output, labels)
             loss.backward()
             train_loss += loss.item()
             optimizer.step()
-
-            if batch_idx % config.config_data["log_steps"]:
-                print(
-                    "Epoch {}, batch {}: Loss {:.6f}".format(
-                        epoch, batch_idx, loss.item()
-                    )
-                )
+            
         print(
-            "Epoch {}: Train Loss {:.6f}".format(
+            10 * "-" + "Epoch {}: Train Loss {:.6f}".format(
                 epoch, train_loss / len(train_dataloader)
-            )
+            ) + 10 * "-"
         )
-
-        print(10 * "-" + "Validation" + 10 * "-")
-        val_loss = 0.0
-        net.eval()
-        with torch.no_grad():
-            for batch_idx, (images, labels) in enumerate(val_dataloader):
-                images, labels = images.to(device), labels.to(device)
-                output = net(images)
-                loss = criterion(output, labels)
-                val_loss += loss.item()
-        print("Epoch {}: Val Loss {:.6f}".format(epoch, val_loss / len(val_dataloader)))
-
 
 if __name__ == "__main__":
     app.run(main)

@@ -5,11 +5,11 @@
     "img_width": 128,
     "img_height": 64,
     "train": {
-      "batch_size": 64,
+      "batch_size": 128,
       "shuffle": true
     },
     "val": {
-      "batch_size": 64,
+      "batch_size": 128,
       "shuffle": true
     }
   },
